@@ -3,27 +3,24 @@ on:
   push:
   schedule:
     - cron: '5 * * * *'
-  workflow_dispatch:
   watch:
     types: [started]
+  workflow_dispatch:
 
 jobs:
-  sync:
+  merge:
     runs-on: ubuntu-latest
+    if: github.event.repository.owner.id == github.event.sender.id
     steps:
-      - uses: actions/checkout@v4
+      # 👇 这里必须用 v2.3.5 才能自动执行！
+      - uses: actions/checkout@v2.3.5
 
-      - name: 配置 Git
+      - name: Merge upstream
         run: |
-          git config --global user.name "robert34"
-          git config --global user.email "lfyuuanwuqu@163.com"
-
-      - name: 拉取完整仓库
-        run: git pull --unshallow
-
-      - name: 同步上游代码
-        run: |
-          git remote add upstream https://github.com/6dylan6/jdpro.git || true
+          git config --global user.name 'robert34'
+          git config --global user.email 'lfyuuanwuqu@163.com'
+          git pull --unshallow
+          git remote add upstream https://github.com/6dylan6/jdpro.git
           git fetch upstream
           git checkout main
           git merge --no-edit upstream/main

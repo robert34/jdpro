@@ -1,0 +1,41 @@
+name: 同步上游 GitHub 仓库
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '5 * * * *'  # 每小时第5分钟同步一次
+  workflow_dispatch:     # 允许手动触发
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 拉取当前仓库代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 配置 Git
+        run: |
+          git config --global user.name "robert34"
+          git config --global user.email "lfyuuanwuqu@163.com"
+
+      - name: 添加上游并拉取
+        run: |
+          git remote add upstream https://github.com/6dylan6/jdpro.git || true
+          git fetch upstream
+
+      - name: 仅同步代码（保留自己的 .github/workflows）
+        run: |
+          # 基于上游 main，做一次合并（不删除自己的文件）
+          git checkout main
+          git merge upstream/main -m "merge upstream/main"
+
+      - name: 推送到自己仓库（普通 push，不强制）
+        run: |
+          git push origin main
+          # 同步标签（可选）
+          git fetch upstream --tags
+          git push origin --tags

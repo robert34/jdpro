@@ -1,0 +1,12 @@
+name: 测试定时触发
+on:
+  schedule:
+    - cron: '*/10 * * * *'  
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 打印时间
+        run: date

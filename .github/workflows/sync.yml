@@ -10,7 +10,6 @@ on:
 jobs:
   merge:
     runs-on: ubuntu-latest
-    if: github.event.repository.owner.id == github.event.sender.id
     steps:
       # 👇 这里必须用 v2.3.5 才能自动执行！
       - uses: actions/checkout@v2.3.5
